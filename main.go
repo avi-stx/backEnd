@@ -39,7 +39,7 @@ func initServer() {
 
 	router := gin.Default()
 	defineRoutes(router)
-	router.Run("0.0.0.0:8090") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	router.Run("0.0.0.0:8090")
 
 }
 
