@@ -6,8 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
-	router := gin.Default()
+func defineRoutes(router *gin.Engine) {
 
 	//Upload
 	router.PUT("/files", func(c *gin.Context) {
@@ -34,5 +33,17 @@ func main() {
 
 	})
 
+}
+
+func initServer() {
+
+	router := gin.Default()
+
+	defineRoutes(router)
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+
+}
+
+func main() {
+	initServer()
 }
