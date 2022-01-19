@@ -18,21 +18,21 @@ func getRelativePath() string {
 
 func getFilesInDir() []fileInfo {
 	relativePath := getRelativePath()
-	files, err := ioutil.ReadDir(relativePath + "/pseudoDB")
+	dirPath := relativePath + "/pseudoDB/"
+	files, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 		log.Fatal(err)
 	}
 	filesInDir := []fileInfo{}
 
 	for _, file := range files {
-		fileStat, err := os.Stat(file.Name())
+		fileStat, err := os.Stat(dirPath + file.Name())
 		if err != nil {
 			log.Fatal(err)
 		}
 		filesInDir = append(filesInDir, fileInfo{1, fileStat.Name(), fileStat.Name(), fileStat.Size(), fileStat.ModTime()})
 		fmt.Println(file.Name())
 	}
-	fmt.Println("filesInDir is: ", filesInDir)
 
 	return filesInDir
 }
