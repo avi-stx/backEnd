@@ -6,8 +6,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func defineRoutes(router *gin.Engine) {
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
+}
 
+func defineRoutes(router *gin.Engine) {
 	//Upload
 	router.PUT("/files", func(c *gin.Context) {
 		c.String(http.StatusOK, "file uploaded\n")
@@ -22,13 +35,11 @@ func defineRoutes(router *gin.Engine) {
 	// get list of all files
 	router.GET("/files", func(c *gin.Context) {
 		c.String(http.StatusOK, "got all files \n")
-
 	})
 
 	// delete a file
 	router.DELETE("/files/:name", func(c *gin.Context) {
 		fileName := c.Param("name")
-
 		// err := os.Remove("testFile.txt")
 		// if err != nil {
 		// 	log.Fatal(err)
@@ -42,8 +53,9 @@ func defineRoutes(router *gin.Engine) {
 func initServer() {
 
 	router := gin.Default()
+	router.Use(CORSMiddleware())
 	defineRoutes(router)
-	router.Run("0.0.0.0:8090")
+	router.Run("localhost:8080")
 
 }
 
