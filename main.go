@@ -35,6 +35,8 @@ func defineRoutes(router *gin.Engine) {
 	// get list of all files
 	router.GET("/files", func(c *gin.Context) {
 
+		readFiles()
+
 		c.String(http.StatusOK, "got all files \n")
 
 	})
