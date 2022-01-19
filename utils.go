@@ -37,9 +37,9 @@ func getFilesInDir() []fileInfo {
 	return filesInDir
 }
 
-func readFiles() {
+func readFiles() []fileInfo {
 
-	files := getFilesInDir()
-	fmt.Println(files)
+	filesList := getFilesInDir()
+	return filesList
 
 }
