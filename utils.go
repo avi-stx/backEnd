@@ -11,6 +11,19 @@ import (
 
 const DIR_NAME = "/pseudoDB/"
 
+func removeFile(fileName string) bool {
+
+	relativePath := getRelativePath()
+	dirPath := relativePath + DIR_NAME
+	fullPath := dirPath + fileName
+	e := os.Remove(fullPath)
+	if e != nil {
+		log.Fatal(e)
+		return false
+	}
+	return true
+}
+
 func getRelativePath() string {
 	dir, err := os.Getwd()
 	if err != nil {
