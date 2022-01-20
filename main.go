@@ -48,12 +48,11 @@ func defineRoutes(router *gin.Engine) {
 	// delete a file
 	router.DELETE("/files/:name", func(c *gin.Context) {
 		fileName := c.Param("name")
-		// err := os.Remove("testFile.txt")
-		// if err != nil {
-		// 	log.Fatal(err)
-		// }
-		c.String(http.StatusOK, "deleted %s\n", fileName)
-
+		isRemoved := removeFile(fileName)
+		if isRemoved {
+			c.String(http.StatusOK, "deleted %s\n", fileName)
+		}
+		c.String(http.StatusNotFound, "%s not found\n", fileName)
 	})
 
 }
