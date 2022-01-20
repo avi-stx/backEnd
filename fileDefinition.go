@@ -3,9 +3,9 @@ package main
 import "time"
 
 type fileInfo struct {
-	id           int64
-	name         string
-	extension    string
-	size         int64
-	creationData time.Time
+	Id           string    `json:"id"`
+	Name         string    `json:"name"`
+	Extension    string    `json:"extension"`
+	Size         int64     `json:"size"`
+	CreationDate time.Time `json:"creationDate"`
 }

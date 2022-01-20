@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,10 +37,14 @@ func defineRoutes(router *gin.Engine) {
 	// get list of all files
 	router.GET("/files", func(c *gin.Context) {
 
-		readFiles()
+		filesList := readFiles()
+		var jsonData []byte
+		jsonData, err := json.Marshal(filesList)
 
-		c.String(http.StatusOK, "got all files \n")
-
+		if err != nil {
+			log.Println(err)
+		}
+		c.Data(http.StatusOK, "application/json", jsonData)
 	})
 
 	// delete a file

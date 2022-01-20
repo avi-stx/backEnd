@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+
+	uuid "github.com/nu7hatch/gouuid"
 )
 
 func getRelativePath() string {
@@ -25,13 +26,14 @@ func getFilesInDir() []fileInfo {
 	}
 	filesInDir := []fileInfo{}
 
+	uuid, _ := uuid.NewV4()
+
 	for _, file := range files {
 		fileStat, err := os.Stat(dirPath + file.Name())
 		if err != nil {
 			log.Fatal(err)
 		}
-		filesInDir = append(filesInDir, fileInfo{1, fileStat.Name(), fileStat.Name(), fileStat.Size(), fileStat.ModTime()})
-		fmt.Println(file.Name())
+		filesInDir = append(filesInDir, fileInfo{uuid.String(), fileStat.Name(), fileStat.Name(), fileStat.Size(), fileStat.ModTime()})
 	}
 
 	return filesInDir
