@@ -25,7 +25,12 @@ func CORSMiddleware() gin.HandlerFunc {
 func defineRoutes(router *gin.Engine) {
 	//Upload
 	router.POST("/files", func(c *gin.Context) {
-		c.String(http.StatusOK, "file uploaded\n")
+		isFileUploaded := saveFileHandler(c)
+		if isFileUploaded {
+			c.String(http.StatusOK, "File %s Uploaded")
+		} else {
+			c.String(http.StatusBadRequest, "internal server error")
+		}
 	})
 
 	// Download

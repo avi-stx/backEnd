@@ -1,15 +1,43 @@
 package main
 
 import (
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	uuid "github.com/nu7hatch/gouuid"
 )
 
 const DIR_NAME = "/pseudoDB/"
+
+func saveFileHandler(c *gin.Context) bool {
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	filename := header.Filename
+
+	relativePath := getRelativePath()
+	dirPath := relativePath + DIR_NAME
+	out, err := os.Create(dirPath + filename)
+	if err != nil {
+		log.Fatal(err)
+		return false
+
+	}
+	defer out.Close()
+	_, err = io.Copy(out, file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return true
+}
 
 func removeFile(fileName string) bool {
 
