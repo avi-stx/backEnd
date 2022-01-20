@@ -38,9 +38,7 @@ func defineRoutes(router *gin.Engine) {
 	router.GET("/files", func(c *gin.Context) {
 
 		filesList := readFiles()
-		var jsonData []byte
 		jsonData, err := json.Marshal(filesList)
-
 		if err != nil {
 			log.Println(err)
 		}

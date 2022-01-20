@@ -1,12 +1,15 @@
 package main
 
 import (
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
 
 	uuid "github.com/nu7hatch/gouuid"
 )
+
+const DIR_NAME = "/pseudoDB/"
 
 func getRelativePath() string {
 	dir, err := os.Getwd()
@@ -17,13 +20,16 @@ func getRelativePath() string {
 	return dir
 }
 
-func getFilesInDir() []fileInfo {
-	relativePath := getRelativePath()
-	dirPath := relativePath + "/pseudoDB/"
-	files, err := ioutil.ReadDir(dirPath)
+func readDirContent(path string) []fs.FileInfo {
+
+	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
 	}
+	return files
+}
+
+func generateFilesList(files []fs.FileInfo, dirPath string) []fileInfo {
 	filesInDir := []fileInfo{}
 
 	uuid, _ := uuid.NewV4()
@@ -33,8 +39,23 @@ func getFilesInDir() []fileInfo {
 		if err != nil {
 			log.Fatal(err)
 		}
-		filesInDir = append(filesInDir, fileInfo{uuid.String(), fileStat.Name(), fileStat.Name(), fileStat.Size(), fileStat.ModTime()})
+		filesInDir = append(filesInDir,
+			fileInfo{uuid.String(),
+				fileStat.Name(),
+				fileStat.Name(),
+				fileStat.Size(),
+				fileStat.ModTime()})
 	}
+
+	return filesInDir
+}
+
+func getFilesInDir() []fileInfo {
+
+	relativePath := getRelativePath()
+	dirPath := relativePath + DIR_NAME
+	files := readDirContent(dirPath)
+	filesInDir := generateFilesList(files, dirPath)
 
 	return filesInDir
 }
