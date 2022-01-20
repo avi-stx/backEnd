@@ -31,14 +31,12 @@ func readDirContent(path string) []fs.FileInfo {
 
 func generateFilesList(files []fs.FileInfo, dirPath string) []fileInfo {
 	filesInDir := []fileInfo{}
-
-	uuid, _ := uuid.NewV4()
-
 	for _, file := range files {
 		fileStat, err := os.Stat(dirPath + file.Name())
 		if err != nil {
 			log.Fatal(err)
 		}
+		uuid, _ := uuid.NewV4()
 		filesInDir = append(filesInDir,
 			fileInfo{uuid.String(),
 				fileStat.Name(),
