@@ -9,10 +9,13 @@ import (
 	"mime/multipart"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+const AMOUNT_OF_DEMO_FILES = 5
 
 func TestRemoveFile(t *testing.T) {
 	err := ioutil.WriteFile(config.AppConfig.TargetFolder+"existFile.txt", []byte("Hello"), 0755)
@@ -38,20 +41,42 @@ func TestRemoveFile(t *testing.T) {
 	}
 }
 
-func TestReadFilesAmount(t *testing.T) {
-	filesList := utils.ReadFiles()
-	if len(filesList) != 2 {
-		t.Errorf("not enought files were read")
+func createDemoFiles() {
+	for i := 0; i < AMOUNT_OF_DEMO_FILES; i++ {
+		os.Create("../tests_assets/demo_file" + strconv.Itoa(i) + ".txt")
 	}
 }
 
-func TestReadFilesNames(t *testing.T) {
-	filesList := utils.ReadFiles()
-	name1, name2 := filesList[0].Name, filesList[1].Name
-	if name1 != "demo_file.txt" || name2 != "demo_file2.txt" {
-		t.Errorf("file were not read correctly")
-
+func removeDemoFiles() {
+	for i := 0; i < AMOUNT_OF_DEMO_FILES; i++ {
+		os.Remove("../tests_assets/demo_file" + strconv.Itoa(i) + ".txt")
 	}
+}
+
+func TestReadFilesAmount(t *testing.T) {
+	createDemoFiles()
+	defer removeDemoFiles()
+	filesList := utils.ReadFiles()
+	if len(filesList) != AMOUNT_OF_DEMO_FILES {
+		t.Errorf("not enought files were read")
+	}
+
+}
+
+func TestReadFilesNames(t *testing.T) {
+	createDemoFiles()
+	defer removeDemoFiles()
+
+	filesList := utils.ReadFiles()
+
+	for i, file := range filesList {
+		expectedName := "demo_file" + strconv.Itoa(i) + ".txt"
+		actualName := file.Name
+		if expectedName != actualName {
+			t.Errorf("file were not read correctly")
+		}
+	}
+
 }
 
 func TestIsExist(t *testing.T) {
@@ -68,7 +93,6 @@ func TestGetFullPathToFile(t *testing.T) {
 
 	actual := utils.GetFullPathToFile("demo_file.txt")
 	expected := "../tests_assets/demo_file.txt"
-
 	if expected != actual {
 		t.Errorf("path %s not equal to %s", actual, expected)
 	}
@@ -83,15 +107,38 @@ func TestGetFiles(t *testing.T) {
 }
 
 func TestDownload(t *testing.T) {
-	router, w := setup()
-	req := httptest.NewRequest("GET", "/files/demo_file.txt", nil)
-	router.ServeHTTP(w, req)
-	assert.Equal(t, 200, w.Code)
+
+	os.Create("../tests_assets/demo_file_exist.txt")
+	defer os.Remove("../tests_assets/demo_file_exist.txt")
+
+	tables := []struct {
+		x           string
+		expected    int
+		description string
+	}{
+		{"demo_file.txt", 404, "trying to download file that doesn't exist"},
+		{"demo_file_exist.txt", 200, "trying to download file that exist"},
+		{"", 301, "trying to download file without a name"},
+	}
+
+	for _, table := range tables {
+		router, w := setup()
+		req := httptest.NewRequest("GET", "/files/"+table.x, nil)
+		router.ServeHTTP(w, req)
+		assert.Equal(t, table.expected, w.Code)
+	}
 }
 
 func TestUpload(t *testing.T) {
+	os.Create("../tests_assets/demo_file.txt")
+	defer os.Remove("../tests_assets/demo_file.txt")
+
 	router, w := setup()
+	//Set up a pipe to avoid buffering
 	pr, pw := io.Pipe()
+	//This writers is going to transform
+	//what we pass to it to multipart form data
+	//and write it to our io.Pipe
 	writer := multipart.NewWriter(pw)
 	go func() {
 		defer writer.Close()
