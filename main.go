@@ -27,7 +27,7 @@ func defineRoutes(router *gin.Engine) {
 	router.POST("/files", func(c *gin.Context) {
 		isFileUploaded := saveFileHandler(c)
 		if isFileUploaded {
-			c.String(http.StatusOK, "File %s Uploaded")
+			c.IndentedJSON(http.StatusOK, gin.H{"message": "upload succeeded"})
 		} else {
 			c.String(http.StatusBadRequest, "internal server error")
 		}

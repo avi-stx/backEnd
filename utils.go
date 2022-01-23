@@ -23,9 +23,8 @@ func saveFileHandler(c *gin.Context) bool {
 
 	filename := header.Filename
 
-	relativePath := getRelativePath()
-	dirPath := relativePath + DIR_NAME
-	out, err := os.Create(dirPath + filename)
+	fullFileName := getFullPathToFile(filename)
+	out, err := os.Create(fullFileName)
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -39,16 +38,33 @@ func saveFileHandler(c *gin.Context) bool {
 	return true
 }
 
-func removeFile(fileName string) bool {
+func isFileExist(fileName string) bool {
+	_, err := os.Stat(fileName)
+	return !os.IsNotExist(err)
+}
 
+func getFullPathToFile(fileName string) string {
 	relativePath := getRelativePath()
 	dirPath := relativePath + DIR_NAME
-	fullPath := dirPath + fileName
+	return dirPath + fileName
+}
+
+func removeFile(fileName string) bool {
+
+	fullPath := getFullPathToFile(fileName)
+	fileExist := isFileExist(fullPath)
+
+	if !fileExist {
+		return false
+	}
+
 	e := os.Remove(fullPath)
+
 	if e != nil {
 		log.Fatal(e)
 		return false
 	}
+
 	return true
 }
 
