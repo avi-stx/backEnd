@@ -36,6 +36,7 @@ func defineRoutes(router *gin.Engine) {
 	//Upload
 	router.POST("/files", func(c *gin.Context) {
 		file, header, err := c.Request.FormFile("file")
+
 		converted := io.Reader(file)
 		filename := header.Filename
 		if err != nil {
