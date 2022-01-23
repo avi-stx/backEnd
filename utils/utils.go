@@ -42,6 +42,11 @@ func GetFullPathToFile(fileName string) string {
 
 func RemoveFile(fileName string) bool {
 	fullPath := GetFullPathToFile(fileName)
+
+	if fileName == "" {
+		return false
+	}
+
 	fileExist := IsFileExist(fullPath)
 
 	if !fileExist {
