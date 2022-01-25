@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+  labels:
+    name: backend-deploy
+    app: backend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: backend-pod
+      app: backend-app
+  template:
+    metadata:
+      name: backend-pod
+      labels:
+        name: backend-pod
+        app: backend-app
+    spec:
+      containers:
+        - name: backend
+          image: alfital2/back-end
+          ports:
+            - containerPort: 8080
+---
+
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: backend-deployment
+#  labels:
+#    app: myBackend
+#    type: back-end
+#spec:
+#  template:
+#    metadata:
+#      name: backend-pod
+#      labels:
+#        app: myBackend
+#        name: back-end
+#    spec:
+#      containers:
+#        - name: back-end
+#          image: alfital2/back-end
+#          ports:
+#            - name: http
+#              containerPort: 8080
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      name: back-end
+#---
