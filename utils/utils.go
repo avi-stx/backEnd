@@ -2,6 +2,7 @@ package utils
 
 import (
 	"Backend_side/config"
+	"fmt"
 	"io"
 	"io/fs"
 	"io/ioutil"
@@ -101,6 +102,7 @@ func getFilesInDir(dirName string) []fileInfo {
 
 	relativePath := getRelativePath()
 	dirPath := relativePath + "/" + dirName
+	fmt.Println("dirPath is : ", dirPath)
 	files := readDirContent(dirPath)
 	filesInDir := generateFilesList(files, dirPath)
 

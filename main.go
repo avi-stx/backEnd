@@ -6,14 +6,14 @@ import (
 )
 
 func init() {
-	err := config.ReadConfig("config/local_server.json")
-	if err != nil {
+	if err := config.ReadConfig("config/local_server.json"); err != nil {
 		panic(err)
 	}
-
 }
 
 func main() {
 	router := utils.InitServer()
-	router.Run("localhost:8080")
+	router.Run(":8080")
 }
+
+//
